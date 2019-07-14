@@ -25,7 +25,7 @@ app.use(express.static("public"));
 // Connecting Mongo database to Mongoose
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-mongoose.connect(MONGODB_URI,{ useNewUrlParser: true });
+mongoose.connect(MONGODB_URI,{ useNewUrlParser: true, useCreateIndex: true });
 
 // Routes
 // A GET route
@@ -54,7 +54,7 @@ app.get("/scrape", function(req, res) {
         db.Article.create(results)
           .then(function(dbArticle) {
             // View the added result in the console
-            console.log(dbArticle);
+            res.send(dbArticle);
           })
           .catch(function(err) {
             console.log(err);
@@ -80,6 +80,39 @@ app.get("/articles", function(req, res) {
     // If an error occurred, send it to the client
     res.json(err);
   });
+});
+
+// Route for getting all Articles from the db
+app.get("/articles/saved", function(req, res) {
+
+  db.Article.find({saved:true})
+  .then(function(dbArticle) {
+    // If we were able to successfully find Articles, send them back to the client
+    res.json(dbArticle);
+    // console.log(dbArticle);
+  })
+  .catch(function(err) {
+    // If an error occurred, send it to the client
+    res.json(err);
+  });
+});
+
+
+// Route for saving a recipe
+app.get("/articles/:id", function(req, res) {
+  console.log(req.params.id);
+
+  db.Article.update({_id:req.params.id},{$set: {saved:true}})
+  .then(function(dbArticle) {
+    // If we were able to successfully find Articles, send them back to the client
+    res.json(dbArticle);
+    // console.log(dbArticle);
+  })
+  .catch(function(err) {
+    // If an error occurred, send it to the client
+    res.json(err);
+  });
+
 });
 
 // Route for grabbing a specific Article by id, populate it with it's note

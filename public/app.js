@@ -8,11 +8,63 @@ $.getJSON("/articles", function(data) {
 
       $("#articles").append("<p data-id='" + data[i]._id + "'><div class='card mb-3'><div class='row no-gutters'><div class='col-md-2'><img src='" + data[i].image +
         "' class='card-img'></div><div class='col-md-10'><div class='card-body'><h5 class='card-title'>" + data[i].title + 
-      "</h5><p class='card-text'>" + data[i].description + "</p><a href='" + data[i].link + "' class='btn btn-primary'>Link to recipe</a></div></div></div></div>"); 
+      "</h5><p class='card-text'>" + data[i].description + "</p><a href='" + data[i].link + "' class='btn btn-primary'>Link to recipe</a>" +
+      "<a href='' class='btn btn-primary' data-id='" + data[i]._id + "' id='savearticle'>Save Receipe</a>" +
+      "</div></div></div></div>"); 
     }
   });
   
-  
+// scrape articles
+  $("#scrapeArticles").click(function() {
+    event.preventDefault();
+    // Now make an ajax call for the Article
+    $.ajax({
+      method: "GET",
+      url: "/scrape"
+    })
+      // With that done, add the note information to the page
+      .then(function(data) {
+        console.log(data);
+      });
+  });
+
+
+//   Show saved articles
+  $("#savedArticles").click(function() {
+    event.preventDefault();
+    // Now make an ajax call for the Article
+    $.ajax({
+      method: "GET",
+      url: "/articles/saved"
+    })
+      // With that done, add the note information to the page
+      .then(function(data) {
+        console.log(data);
+      });
+  }); 
+
+
+//   mark an article as saved
+  $("#savearticle").click(function() {
+
+     console.log("this button works");    
+
+    var thisId = $(this).attr("data-id");
+    console.log(thisId);
+
+    // Now make an ajax call for the Article
+    $.ajax({
+      method: "GET",
+      url: "/articles/" + thisId
+    })
+      // With that done, add the note information to the page
+      .then(function(data) {
+        console.log(data);
+      });
+  }); 
+
+
+
 //   // Whenever someone clicks a p tag
 //   $(document).on("click", "p", function() {
 //     // Empty the notes from the note section
