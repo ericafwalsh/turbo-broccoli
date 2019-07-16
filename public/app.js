@@ -1,4 +1,6 @@
-// Grab the articles as a json
+$(document).ready(function() {
+
+1// Grab the articles as a json
 $.getJSON("/articles", function(data) {
 
 
@@ -6,15 +8,16 @@ $.getJSON("/articles", function(data) {
     for (var i = 0; i < data.length; i++) {
       // Display the apropos information on the page
 
-      $("#articles").append("<p data-id='" + data[i]._id + "'><div class='card mb-3'><div class='row no-gutters'><div class='col-md-2'><img src='" + data[i].image +
-        "' class='card-img'></div><div class='col-md-10'><div class='card-body'><h5 class='card-title'>" + data[i].title + 
+      $("#articles").append("<p data-id='" + data[i]._id + "'><div class='card mb-3'><div class='row no-gutters'><div class='col-md-2'>" + 
+    //   "<img src='" + data[i].image + "' class='card-img'>" + 
+      "</div><div class='col-md-10'><div class='card-body'><h5 class='card-title'>" + data[i].title + 
       "</h5><p class='card-text'>" + data[i].description + "</p><a href='" + data[i].link + "' class='btn btn-primary'>Link to recipe</a>" +
-      "<a href='' class='btn btn-primary' data-id='" + data[i]._id + "' id='savearticle'>Save Receipe</a>" +
+      "<a id='savearticle' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Save Receipe</a>" +
       "</div></div></div></div>"); 
     }
   });
   
-// scrape articles
+// scrape articles - DONE
   $("#scrapeArticles").click(function() {
     event.preventDefault();
     // Now make an ajax call for the Article
@@ -29,7 +32,7 @@ $.getJSON("/articles", function(data) {
   });
 
 
-//   Show saved articles
+//   Show saved articles - DONE
   $("#savedArticles").click(function() {
     event.preventDefault();
     // Now make an ajax call for the Article
@@ -39,15 +42,17 @@ $.getJSON("/articles", function(data) {
     })
       // With that done, add the note information to the page
       .then(function(data) {
+
+        window.location = "/articles/saved";
         console.log(data);
       });
   }); 
 
 
-//   mark an article as saved
-  $("#savearticle").click(function() {
+//   mark an article as saved - DONE
+  $(document).on("click","#savearticle", function() {
 
-     console.log("this button works");    
+    event.preventDefault();
 
     var thisId = $(this).attr("data-id");
     console.log(thisId);
@@ -60,6 +65,7 @@ $.getJSON("/articles", function(data) {
       // With that done, add the note information to the page
       .then(function(data) {
         console.log(data);
+
       });
   }); 
 
@@ -127,4 +133,4 @@ $.getJSON("/articles", function(data) {
 //     $("#titleinput").val("");
 //     $("#bodyinput").val("");
 //   });
-  
+});

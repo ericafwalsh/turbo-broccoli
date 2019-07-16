@@ -100,7 +100,6 @@ app.get("/articles/saved", function(req, res) {
 
 // Route for saving a recipe
 app.get("/articles/:id", function(req, res) {
-  console.log(req.params.id);
 
   db.Article.update({_id:req.params.id},{$set: {saved:true}})
   .then(function(dbArticle) {
