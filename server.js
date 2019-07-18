@@ -7,7 +7,7 @@ var cheerio = require("cheerio");
 // Require all models
 var db = require("./models");
 
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 // Initialize Express
 var app = express();
@@ -32,7 +32,7 @@ mongoose.connect(MONGODB_URI,{ useNewUrlParser: true, useCreateIndex: true });
 app.get("/scrape", function(req, res) {
 
     // Scraping data from bon appetit and putting it in to 'results'
-    axios.get("https://www.bonappetit.com/recipes").then(function (response) {
+    let results = axios.get("https://www.bonappetit.com/recipes").then(function (response) {
       var $ = cheerio.load(response.data);
       var results = [];
       $("li").each(function (i, element) {
@@ -55,14 +55,17 @@ app.get("/scrape", function(req, res) {
           .then(function(dbArticle) {
             // View the added result in the console
             res.send(dbArticle);
+          }).then(function(dbArticle) {
+            return true;
           })
           .catch(function(err) {
             console.log(err);
+            return false;
           });
       });
   
       // Send a message to the client
-      res.send("Scrape Complete");
+     // res.send(results);
     });
 
 
@@ -97,6 +100,21 @@ app.get("/articles/saved", function(req, res) {
   });
 });
 
+// Route for getting all Articles from the db
+app.get("/articles/clear", function(req, res) {
+
+  db.Article.deleteMany({})
+  .then(function(dbArticle) {
+    // If we were able to successfully find Articles, send them back to the client
+    res.json(dbArticle);
+    // console.log(dbArticle);
+  })
+  .catch(function(err) {
+    // If an error occurred, send it to the client
+    res.json(err);
+  });
+});
+
 
 // Route for saving a recipe
 app.get("/articles/:id", function(req, res) {
@@ -111,15 +129,26 @@ app.get("/articles/:id", function(req, res) {
     // If an error occurred, send it to the client
     res.json(err);
   });
-
 });
+
+// Route for saving a recipe
+app.get("/articles/unsave/:id", function(req, res) {
+
+  db.Article.update({_id:req.params.id},{$set: {saved:false}})
+  .then(function(dbArticle) {
+    // If we were able to successfully find Articles, send them back to the client
+    res.json(dbArticle);
+    // console.log(dbArticle);
+  })
+  .catch(function(err) {
+    // If an error occurred, send it to the client
+    res.json(err);
+  });
+});
+
 
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", function(req, res) {
-});
-
-// Route for saving/updating an Article's associated Note
-app.post("/articles/:id", function(req, res) {
 });
 
 // Start the server
