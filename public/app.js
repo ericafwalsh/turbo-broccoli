@@ -135,7 +135,7 @@ $(document).ready(function () {
       .then(function (data) {
         let $title = $('#scrapper-title');
         $title.empty();
-        $title.append('Saved Recipies');
+        $title.append('Saved Recipes');
 
         //Remove any content that may already be on the page
         $("#articles").empty();
