@@ -81,6 +81,9 @@ $(document).ready(function () {
       // With that done, add the note information to the page
       .then(function (data) {
         appendSavedData(data);
+        $("#scrapeArticles").hide();
+        $("#clearArticles").hide();
+        
       });
   });
 
