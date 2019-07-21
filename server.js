@@ -23,12 +23,10 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connecting Mongo database to Mongoose
-// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true });
 
 // Routes
-// A GET route
 app.get("/scrape", function (req, res) {
 
   // Scraping data from bon appetit and putting it in to 'results'
@@ -66,86 +64,95 @@ app.get("/scrape", function (req, res) {
 
 });
 
-// Route for getting all Articles from the db - DONE
+// Route for getting all recipes from the db
 app.get("/articles", function (req, res) {
 
   db.Article.find({ saved: false })
     .then(function (dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
       res.json(dbArticle);
     })
     .catch(function (err) {
-      // If an error occurred, send it to the client
       res.json(err);
     });
 });
 
-// Route for getting all saved Articles from the db - DONE
+// Route for getting all saved recipes from the db
 app.get("/articles/saved", function (req, res) {
 
   db.Article.find({ saved: true })
     .then(function (dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
       res.json(dbArticle);
       // console.log(dbArticle);
     })
     .catch(function (err) {
-      // If an error occurred, send it to the client
       res.json(err);
     });
 });
 
-// Route for clearing all Articles from the db - DONE
+// Route for clearing all recipes from the db
 app.get("/articles/clear", function (req, res) {
 
   db.Article.deleteMany({})
     .then(function (dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
       res.json(dbArticle);
-      // console.log(dbArticle);
     })
     .catch(function (err) {
-      // If an error occurred, send it to the client
       res.json(err);
     });
 });
 
-
-// Route for saving a recipe - DONE
+// Route for saving a recipe
 app.get("/articles/:id", function (req, res) {
 
   db.Article.update({ _id: req.params.id }, { $set: { saved: true } })
     .then(function (dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
       res.json(dbArticle);
-      // console.log(dbArticle);
     })
     .catch(function (err) {
-      // If an error occurred, send it to the client
       res.json(err);
     });
 });
 
-// Route for unsaving a recipe - DONE
+// Route for unsaving a recipe
 app.get("/articles/unsave/:id", function (req, res) {
 
   db.Article.update({ _id: req.params.id }, { $set: { saved: false } })
     .then(function (dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
       res.json(dbArticle);
-      // console.log(dbArticle);
     })
     .catch(function (err) {
-      // If an error occurred, send it to the client
       res.json(err);
     });
 });
 
+// Route for grabbing a specific recipe by id, populate it with it's note
+app.get("/articles/notes/:id", function (req, res) {
 
-// Route for grabbing a specific Article by id, populate it with it's note - NEED TO WORK ON
-app.get("/articles/:id", function (req, res) {
+  db.Article.find({ _id: req.params.id })
+  .populate("note")
+  .then(function (dbArticle) {
+    res.json(dbArticle);
+  })
+  .catch(function (err) {
+    res.json(err);
+  });
+});
 
-  
+// Route for grabbing a specific recipe by id, adding its note
+app.post("/articles/newnotes/:id", function (req, res) {
+
+  // Create a new note and pass the req.body to the entry
+  db.Note.create({body: req.body.note})
+    .then(function(dbNote) {
+      
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id}, { new: true });
+    })
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
 });
 
 // Start the server
