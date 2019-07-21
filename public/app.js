@@ -16,6 +16,40 @@ $(document).ready(function () {
     }
   }
 
+  function appendSavedData(data) {
+
+    $('#scrapper-title').empty();
+    $('#scrapper-title').append('Saved Recipes');
+
+
+     //Remove any content that may already be on the page
+     $("#articles").empty();
+
+     for (var i = 0; i < data.length; i++) {
+
+       $("#articles").append("<p data-id='" + data[i]._id + "'><div class='card mb-3'><div class='row no-gutters'><div class='col-md-2'>" +
+         "<img src='" + data[i].image.split(" ")[0] + "' class='card-img'>" +
+         "</div><div class='col-md-10'><div class='card-body'><h5 class='card-title'>" + data[i].title +
+         "</h5><p class='card-text'>" + data[i].description + "</p><a href='" + data[i].link + "' class='btn btn-primary'>Link to recipe</a>" +
+         "<a id='unsavearticle' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Remove from Saved</a>" +
+         "<a id='addnotes' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Add Notes</a>" +
+         "</div></div></div></div>"
+         +
+         "<div class='modal' tabindex='-1' role='dialog' id='exampleModal' aria-labelledby='exampleModalLabel' aria-hidden='true'>" +
+         "<div class='modal-dialog' role='document'>" +
+         "<div class='modal-content'><div class='modal-header'>" +
+         "<h5 class='modal-title'>Modal title</h5>" +
+         "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>" +
+         "<span aria-hidden='true'>&times;</span></button></div>" +
+         "<div class='modal-body'><p>Modal body text goes here.</p></div>" +
+         "<div class='modal-footer'>" +
+         "<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>" +
+         "<button type='button' class='btn btn-primary'>Save changes</button>" +
+         "</div></div></div></div>"
+       );
+     }
+  };
+
   function renderRecipies() {
     // Grab the articles as a json
     $.getJSON("/articles", function (data) {
@@ -28,7 +62,6 @@ $(document).ready(function () {
   // scrape articles - DONE
   $("#scrapeArticles").click(function () {
     event.preventDefault();
-    alert("This scrape may take a few seconds to complete. Thank you for waiting!");
     // Now make an ajax call for the Article
     $.ajax({
       method: "GET",
@@ -42,8 +75,7 @@ $(document).ready(function () {
       });
   });
 
-
-  //   Show saved articles - DONE
+  // Show saved articles - DONE
   $("#savedArticles").click(function () {
     event.preventDefault();
     // Now make an ajax call for the Article
@@ -53,27 +85,11 @@ $(document).ready(function () {
     })
       // With that done, add the note information to the page
       .then(function (data) {
-        let $title = $('#scrapper-title');
-        $title.empty();
-        $title.append('Saved Recipies');
-
-        //Remove any content that may already be on the page
-        $("#articles").empty();
-        // For each one
-        for (var i = 0; i < data.length; i++) {
-          // Display the apropos information on the page
-          $("#articles").append("<p data-id='" + data[i]._id + "'><div class='card mb-3'><div class='row no-gutters'><div class='col-md-2'>" +
-            "<img src='" + data[i].image.split(" ")[0] + "' class='card-img'>" +
-            "</div><div class='col-md-10'><div class='card-body'><h5 class='card-title'>" + data[i].title +
-            "</h5><p class='card-text'>" + data[i].description + "</p><a href='" + data[i].link + "' class='btn btn-primary'>Link to recipe</a>" +
-            "<a id='unsavearticle' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Remove from Saved</a>" +
-            "<a id='addnotes' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Add Notes</a>" +
-            "</div></div></div></div>");
-        }
-
+         appendSavedData(data);
       });
   });
 
+  // Clear articles - DONE
   $("#clearArticles").click(function () {
     event.preventDefault();
     // remove html so user no longer sees the recipies
@@ -89,6 +105,14 @@ $(document).ready(function () {
 
         console.log(data);
       });
+  });
+
+  // Add notes - NEED TO WORK ON
+  $(document).on("click", "#addnotes", function () {
+
+    event.preventDefault();
+
+    $("#exampleModal").modal("show");
   });
 
 
@@ -107,55 +131,37 @@ $(document).ready(function () {
     })
       // With that done, add the note information to the page
       .then(function (data) {
+        renderRecipies();
         console.log(data);
 
       });
   });
 
-    //   mark an article as unsaved
-    $(document).on("click", "#unsavearticle", function () {
+  //   mark an article as unsaved - DONE
+  $(document).on("click", "#unsavearticle", function () {
 
-      event.preventDefault();
-  
-      var thisId = $(this).attr("data-id");
-      // Now make an ajax call for the Article
-      $.ajax({
-        method: "GET",
-        url: "/articles/unsave/" + thisId
-      })
-        // With that done, add the note information to the page
-        .then(function (data) {
+    event.preventDefault();
 
+    var thisId = $(this).attr("data-id");
     // Now make an ajax call for the Article
     $.ajax({
       method: "GET",
-      url: "/articles/saved"
+      url: "/articles/unsave/" + thisId
     })
       // With that done, add the note information to the page
       .then(function (data) {
-        let $title = $('#scrapper-title');
-        $title.empty();
-        $title.append('Saved Recipes');
 
-        //Remove any content that may already be on the page
-        $("#articles").empty();
-        // For each one
-        for (var i = 0; i < data.length; i++) {
-          // Display the apropos information on the page
-          $("#articles").append("<p data-id='" + data[i]._id + "'><div class='card mb-3'><div class='row no-gutters'><div class='col-md-2'>" +
-            "<img src='" + data[i].image.split(" ")[0] + "' class='card-img'>" +
-            "</div><div class='col-md-10'><div class='card-body'><h5 class='card-title'>" + data[i].title +
-            "</h5><p class='card-text'>" + data[i].description + "</p><a href='" + data[i].link + "' class='btn btn-primary'>Link to recipe</a>" +
-            "<a id='unsavearticle' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Remove from Saved</a>" +
-            "<a id='addnotes' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Add Notes</a>" +
-            "</div></div></div></div>");
-        }
-
+        // Now make an ajax call for the Article
+        $.ajax({
+          method: "GET",
+          url: "/articles/saved"
+        })
+          // With that done, add the note information to the page
+          .then(function (data) {
+            appendSavedData(data);
+          });
       });
-
-  
-        });
-    });
+  });
 
 
   //   // Whenever someone clicks a p tag

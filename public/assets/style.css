@@ -1,0 +1,12 @@
+.jumbotron {
+    background-image: url("./july-4th-picnic-main.jpg");
+    /* background-size: 70%; */
+    /* background-repeat: no-repeat; */
+    /* background-position: right; */
+    min-height: 400px;
+    object-fit: cover;
+  }
+
+  .jumbotron h1 {
+    font: bold;
+  }
