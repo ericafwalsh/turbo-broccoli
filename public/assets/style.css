@@ -7,3 +7,15 @@
   .jumbotron h1 {
     font: bold;
   }
+
+  .btn {
+    margin: 5px;
+  }
+
+  #notes {
+    margin: 20px;
+  }
+
+  #bodyinput {
+    width: 100%;
+  }

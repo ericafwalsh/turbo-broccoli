@@ -9,7 +9,7 @@ $(document).ready(function () {
         "<img src='" + data[i].image.split(" ")[0] + "' class='card-img'>" +
         "</div><div class='col-md-10'><div class='card-body'><h5 class='card-title'>" + data[i].title +
         "</h5><p class='card-text'>" + data[i].description + "</p><a href='" + data[i].link + "' class='btn btn-primary'>Link to recipe</a>" +
-        "<a id='savearticle' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Save Receipe</a>" +
+        "<a id='savearticle' class='btn btn-primary' href='' data-id='" + data[i]._id + "'>Save Recipe</a>" +
         "</div></div></div></div>");
     }
   }
